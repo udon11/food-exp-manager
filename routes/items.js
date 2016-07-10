@@ -1,6 +1,33 @@
 const express = require('express');
 const router = express.Router();
-const model = require(__dirname + '/model/itemsModel');
+const mongoose = require('mongoose');
+mongoose.connect(process.env.MONGODB_URI, function(err) {
+  if (err) {
+    console.error(err);
+    process.exit(1);
+  }
+});
+
+/**
+ * スキーマ
+ */
+const ItemsSchema = new mongoose.Schema({
+  name: {
+    type: String
+  },
+  type: {
+    type: String
+  },
+  expirationDate: {
+    type: Date
+  },
+  created: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+const Memo = mongoose.model('Items', ItemsSchema);
 
 /**
  * Add
@@ -11,7 +38,7 @@ router.get('/add', function(req, res, next) {
   };
 
   // DBへ追加
-  var items = new model.Items();
+  var items = new mongoose.model('Items');
   items.name = req.query.name ? req.query.name : null;
   items.type = req.query.type ? req.query.type : null;
   items.expirationDate = req.query.expirationDate ? req.query.expirationDate : null;
@@ -33,11 +60,7 @@ router.get('/add', function(req, res, next) {
  * Get
  */
 router.get('/get', function(req, res, next) {
-  const mongoose = require('mongoose');
-  console.log(process.env.MONGODB_URI);
-  mongoose.connect(process.env.MONGODB_URI);
   const Items = mongoose.model('Items');
-
   Items.find({}, function(err, docs) {
     console.log(docs);
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8'});
