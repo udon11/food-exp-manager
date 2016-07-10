@@ -3,6 +3,7 @@ const router = express.Router();
 const mongoose = require('mongoose');
 mongoose.connect(process.env.MONGODB_URI, function(err) {
   if (err) {
+    console.error('MongoDB connect error!');
     console.error(err);
     process.exit(1);
   }
