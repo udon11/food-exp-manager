@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-var db = mongoose.connect(process.env.MONGODB_URI + '/' + 'fem');
+var db = mongoose.connect(process.env.MONGODB_URI);
 const ItemsSchema = new mongoose.Schema({
   name: {
     type: String

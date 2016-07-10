@@ -34,9 +34,8 @@ router.get('/add', function(req, res, next) {
  */
 router.get('/get', function(req, res, next) {
   const mongoose = require('mongoose');
-  console.log('process.env.MONGODB_URI' + '/' + 'fem');
-  console.log(process.env.MONGODB_URI + '/' + 'fem');
-  mongoose.connect(process.env.MONGODB_URI + '/' + 'fem');
+  console.log(process.env.MONGODB_URI);
+  mongoose.connect(process.env.MONGODB_URI);
   const Items = mongoose.model('Items');
 
   Items.find({}, function(err, docs) {
