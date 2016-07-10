@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const db = mongoose.connect('mongodb://27.120.93.212:27017/fem');
+var db = mongoose.connect('MONGODB_URI' + '/' + 'fem');
 const ItemsSchema = new mongoose.Schema({
   name: {
     type: String

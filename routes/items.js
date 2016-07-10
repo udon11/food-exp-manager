@@ -33,7 +33,12 @@ router.get('/add', function(req, res, next) {
  * Get
  */
 router.get('/get', function(req, res, next) {
-  model.find({}, function(err, docs) {
+  const mongoose = require('mongoose');
+  mongoose.connect('MONGODB_URI' + '/' + 'fem');
+  const Items = mongoose.model('Items');
+
+  Items.find({}, function(err, docs) {
+    console.log(docs);
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8'});
     res.end(JSON.stringify(response));
   });
