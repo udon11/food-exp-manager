@@ -1,16 +1,20 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const db = mongoose.connect(process.env.MONGODB_URI);
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function () {
-    console.log('MongoDB connected!');
+mongoose.connect(process.env.MONGODB_URI, function (err) {
+    if (err) {
+      console.log('MongoDB connect error!');
+      console.log(process.env.MONGODB_URI);
+      console.error(err);
+      process.exit(1);
+    }
 });
 
 /**
  * スキーマ
  */
-const ItemsSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+const ItemsSchema = new Schema({
   name: {
     type: String
   },
@@ -26,7 +30,7 @@ const ItemsSchema = new mongoose.Schema({
   }
 });
 
-const Memo = mongoose.model('Items', ItemsSchema);
+const Items = mongoose.model('Items', ItemsSchema);
 
 /**
  * Add
@@ -37,7 +41,7 @@ router.get('/add', function(req, res, next) {
   };
 
   // DBへ追加
-  var items = new mongoose.model('Items');
+  var items = new Items();
   items.name = req.query.name ? req.query.name : null;
   items.type = req.query.type ? req.query.type : null;
   items.expirationDate = req.query.expirationDate ? req.query.expirationDate : null;
@@ -59,11 +63,16 @@ router.get('/add', function(req, res, next) {
  * Get
  */
 router.get('/get', function(req, res, next) {
-  const Items = mongoose.model('Items');
   Items.find({}, function(err, docs) {
-    console.log(docs);
+    if (err) {
+      console.error('DB find error!');
+      console.error(err);
+      res.writeHead(500, {'Content-Type':'application/json; charset=utf-8'});
+      res.end(JSON.stringify(err));
+      return;
+    }
     res.writeHead(200, {'Content-Type':'application/json; charset=utf-8'});
-    res.end(JSON.stringify(response));
+    res.end(JSON.stringify(docs));
   });
 });
 
