@@ -21,9 +21,10 @@
     "gulp": "^3.9.1",
     "gulp-duration": "0.0.0",
     "gulp-util": "^3.0.7",
-    "react": "^15.2.1",
+    "react": "^0.14.8",
     "react-bootstrap": "^0.29.5",
-    "react-dom": "^15.2.1",
+    "react-datepicker": "^0.28.1",
+    "react-dom": "^0.14.8",
     "superagent": "^2.0.0",
     "vinyl-source-stream": "^1.1.0",
     "watchify": "^3.7.0"

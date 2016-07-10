@@ -1,0 +1,35 @@
+body {
+  margin-top: 50px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.container-fluid {
+  max-width: 100%;
+}
+
+/* スマホでnavbar */
+.navbar-toggle {
+    display: none;
+}
+.collapse {
+    display: block;
+    border-color:transparent;
+}
+
+.navbar-right {
+    float: right;
+}
+.navbar-header {
+    float: left;
+}
+.navbar-nav {
+    margin:0 -15px 0 0;
+}
+.navbar-nav>li>a {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}

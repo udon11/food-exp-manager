@@ -1,17 +1,7 @@
 import React from 'react';
 import ReactDom from 'react-dom';
-import {
-    Navbar,
-    Nav,
-    NavItem,
-    Button,
-    Glyphicon,
-    Modal,
-    Table,
-    FormGroup,
-    FormControl,
-    ControlLabel
-} from 'react-bootstrap';
+import DatePicker from 'react-datepicker';
+import {Navbar, Nav, NavItem, Button, Glyphicon, Modal, Table, FormGroup, FormControl, ControlLabel} from 'react-bootstrap';
 import Request from 'superagent';
 import moment from 'moment';
 moment.updateLocale('en', {
@@ -41,6 +31,7 @@ class App extends React.Component {
             itemList: [],
             showItemAddModal: false
         };
+        this.fetchItemList = this.fetchItemList.bind(this);
     }
 
     componentDidMount() {
@@ -49,29 +40,56 @@ class App extends React.Component {
 
     fetchItemList() {
         Request
-            .get('/ajax/get')
+            .get('/ajax/item/get')
             .end((err, res)=> {
                 if (err) {
                     console.error(err);
                     return;
                 }
-                if (!res || !res.text || res.text === '') {
+                if (!res) {
                     return;
                 }
                 const jsonResponse = JSON.parse(res.text);
-                this.setState({itemList: jsonResponse.itemList});
+                this.setState({itemList: jsonResponse});
             });
     }
 
-    addItem(name, expirationDate) {
+    /**
+     * アイテムの追加
+     */
+    addItem(name, type, expirationDate) {
         return new Promise((resolve, reject) => {
             const query = {
                 name: name,
-                expirationDate: expirationDate
+                type: type,
+                expirationDate: expirationDate.toString()
             };
 
             Request
-                .get('/ajax/addItem')
+                .get('/ajax/item/add')
+                .query(query)
+                .end((err, res) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                        return;
+                    }
+                    resolve(res);
+                });
+        });
+    }
+
+    /**
+     * アイテムの削除
+     */
+    removeItem(id) {
+        return new Promise((resolve, reject) => {
+            const query = {
+                id: id
+            };
+            console.log(query);
+            Request
+                .get('/ajax/item/remove')
                 .query(query)
                 .end((err, res) => {
                     if (err) {
@@ -99,10 +117,12 @@ class App extends React.Component {
                     open={open}
                     close={close}
                     addItem={this.addItem}
+                    fetchItemList={this.fetchItemList}
                 />
 
                 <ItemList
                     {...this.state}
+                    removeItem={this.removeItem}
                 />
             </div>
         )
@@ -113,7 +133,9 @@ class NavigationBar extends React.Component {
     render() {
         return (
             <Navbar fixedTop fluid>
-                <Navbar.Brand>FoodExpManager</Navbar.Brand>
+                <Navbar.Header>
+                    <Navbar.Brand>FoodExpManager</Navbar.Brand>
+                </Navbar.Header>
 
                 <Nav pullRight>
                     <NavItem>
@@ -139,34 +161,42 @@ class ItemAddModal extends React.Component {
         super();
         this.state = {
             name: '',
-            expirationDate: ''
+            type: '',
+            expirationDate: moment()
         }
     }
 
     render() {
+        // イベント
         const close = () => {
             this.props.close();
         };
         const changeName = (e) => {
             this.setState({name: e.target.value});
         };
-        const changeExpiratioDate = (e) => {
-            this.setState({expirationDate: e.target.value});
+        const changeType = (e) => {
+            this.setState({type: e.target.value});
+        };
+        const changeExpiratioDate = (date) => {
+            this.setState({expirationDate: date});
         };
         const addItem = () => {
-            this.props.addItem(this.state.name, this.state.expirationDate).then(() => {
+            this.props.addItem(this.state.name, this.state.type, this.state.expirationDate).then(() => {
                 close();
                 this.setState(
                     {
                         name: '',
-                        expirationDate: ''
+                        type: '',
+                        expirationDate: this.state.expirationDate
                     }
                 );
+                this.props.fetchItemList();
             }).catch(() => {
                 alert('アイテムの追加に失敗');
             });
         };
 
+        console.log(this.state);
         return (
             <Modal show={this.props.showModal} onHide={close}>
                 <Modal.Header>
@@ -185,14 +215,22 @@ class ItemAddModal extends React.Component {
                             />
                         </FormGroup>
                         <FormGroup>
-                            <ControlLabel>賞味(消費)期限</ControlLabel>
+                            <ControlLabel>種別</ControlLabel>
                             <FormControl
                                 type="text"
-                                placeholder="賞味(消費)期限を入力"
-                                value={this.state.expirationDate}
-                                onChange={changeExpiratioDate}
+                                placeholder="種別を選択"
+                                value={this.state.type}
+                                onChange={changeType}
                             />
                         </FormGroup>
+                        <div className='text-center'>
+                            <DatePicker
+                                inline
+                                dateFormat="YYYY/MM/DD"
+                                selected={this.state.expirationDate}
+                                onChange={changeExpiratioDate}
+                            />
+                        </div>
                     </form>
                 </Modal.Body>
 
@@ -207,31 +245,49 @@ class ItemAddModal extends React.Component {
 
 class ItemList extends React.Component {
     render() {
-        const itemListElements = this.props.itemList.map((item, i) => {
+        if (this.props.itemList.length === 0) {
+            return <div></div>;
+        };
+
+        const itemListElements = this.props.itemList.map((item) => {
+            const removeItem = () => {
+                this.props.removeItem(item._id).then(() => {
+                    this.props.fetchItemList();
+                }).catch(() => {
+                    alert('アイテムの削除に失敗');
+                });
+            };
+
             return (
-                <tr key={i}>
+                <tr key={item._id}>
                     <td>{item.name}</td>
-                    <td>{item.expirationDate}</td>
+                    <td>{moment(item.expirationDate).format("YYYY/MM/DD")}</td>
                     <td>{moment(item.expirationDate, "YYYY/MM/DD").fromNow()}</td>
+                    <td>
+                        <Glyphicon
+                            className='text-danger'
+                            glyph="glyphicon glyphicon-remove-sign"
+                            onClick={removeItem}
+                        />
+                    </td>
                 </tr>
             )
         });
         return (
-            <div className='container-fuluid'>
-                <Table fluid>
-                    <thead>
-                    <tr>
-                        <th>品名</th>
-                        <th>期限</th>
-                        <th></th>
-                    </tr>
-                    </thead>
+            <Table>
+                <thead>
+                <tr>
+                    <th>品名</th>
+                    <th>期限</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+                </thead>
 
-                    <tbody>
-                    {itemListElements}
-                    </tbody>
-                </Table>
-            </div>
+                <tbody>
+                {itemListElements}
+                </tbody>
+            </Table>
         );
     }
 }
