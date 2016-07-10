@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/memo', function(err){
+mongoose.connect(process.env.MONGODB_URI || process.env.MONGOLAB_URI || process.env.MONGOHQ_URL || 'mongodb://localhost/memo', function(err) {
   if(err){
     console.error('MongoDB connect error!');
+    console.log(process.env.MONGODB_URI);
     console.error(err);
     process.exit(1);
   }
