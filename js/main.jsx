@@ -87,7 +87,6 @@ class App extends React.Component {
             const query = {
                 id: id
             };
-            console.log(query);
             Request
                 .get('/ajax/item/remove')
                 .query(query)
@@ -123,6 +122,7 @@ class App extends React.Component {
                 <ItemList
                     {...this.state}
                     removeItem={this.removeItem}
+                    fetchItemList={this.fetchItemList}
                 />
             </div>
         )
@@ -196,7 +196,6 @@ class ItemAddModal extends React.Component {
             });
         };
 
-        console.log(this.state);
         return (
             <Modal show={this.props.showModal} onHide={close}>
                 <Modal.Header>
@@ -214,6 +213,7 @@ class ItemAddModal extends React.Component {
                                 onChange={changeName}
                             />
                         </FormGroup>
+                        {/*
                         <FormGroup>
                             <ControlLabel>種別</ControlLabel>
                             <FormControl
@@ -223,6 +223,7 @@ class ItemAddModal extends React.Component {
                                 onChange={changeType}
                             />
                         </FormGroup>
+                        */}
                         <div className='text-center'>
                             <DatePicker
                                 inline
@@ -247,13 +248,14 @@ class ItemList extends React.Component {
     render() {
         if (this.props.itemList.length === 0) {
             return <div></div>;
-        };
+        }
 
         const itemListElements = this.props.itemList.map((item) => {
             const removeItem = () => {
                 this.props.removeItem(item._id).then(() => {
                     this.props.fetchItemList();
-                }).catch(() => {
+                }).catch((err) => {
+                    console.log(err);
                     alert('アイテムの削除に失敗');
                 });
             };
