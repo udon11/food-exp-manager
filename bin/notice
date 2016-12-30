@@ -13,9 +13,10 @@ const cron = require('cron').CronJob;
 const job = new cron({
     cronTime: '*/1 * * * * *',
     start: false,
-    timeZone: 'Japan/Tokyo',
+    timeZone: 'Asia/Tokyo',
     onTick: () => {
         logger.info('処理開始');
+
         Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
             if (err) {
                 logger.error(err);
