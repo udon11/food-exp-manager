@@ -8,55 +8,64 @@ const moment = require('moment');
 const Request = require('superagent');
 const Item = require('../model/schema/item');
 const logger = require('../util/logger/systemLogger');
+const cron = require('cron').CronJob;
 
-
-Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
-    if (err) {
-        logger.error(err);
-        throw new Error('get item error.');
-    }
-
-    // 0件なら何もしない
-    if (docs.length == 0) {
-        logger.info('賞味期限切れは0件');
-        process.exit();
-    }
-
-    logger.info('賞味期限切れは' + docs.length + '件');
-
-    /*
-     * 通知文の組み立て
-     */
-    let body = {
-        value1: config.notice.prefix
-    };
-    docs.map((doc) => {
-        doc.expirationDate = moment.unix(doc.expirationDate).format('MM/DD');
-        body.value1 += doc.name + ' ' + moment.unix(doc.expirationDate).format('YYYY/MM/DD') + 'まで<br>';
-    });
-    body.value1 += config.notice.suffix;
-
-    /*
-     * 通知実行
-     */
-    Request
-        .post(config.ifttt.url)
-        .type('json')
-        .send(body)
-        .end((err, res) => {
+const job = new cron({
+    cronTime: '*/1 * * * * *',
+    start: false,
+    timeZone: 'Japan/Tokyo',
+    onTick: () => {
+        logger.info('処理開始');
+        Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
             if (err) {
                 logger.error(err);
-                throw new Error(err);
-            }
-            if (res.statusCode != 200) {
-                logger.error(res);
-                throw new Error(res);
+                throw new Error('get item error.');
             }
 
+            // 0件なら何もしない
+            if (docs.length == 0) {
+                logger.info('賞味期限切れは0件');
+                process.exit();
+            }
+
+            logger.info('賞味期限切れは' + docs.length + '件');
+
             /*
-             * プロセス終了
+             * 通知文の組み立て
              */
-            logger.info('通知完了');
-            process.exit();
+            let body = {
+                value1: config.notice.prefix
+            };
+            docs.map((doc) => {
+                doc.expirationDate = moment.unix(doc.expirationDate).format('MM/DD');
+                body.value1 += doc.name + ' ' + moment.unix(doc.expirationDate).format('YYYY/MM/DD') + 'まで<br>';
+            });
+            body.value1 += config.notice.suffix;
+
+            /*
+             * 通知実行
+             */
+            Request
+                .post(config.ifttt.url)
+                .type('json')
+                .send(body)
+                .end((err, res) => {
+                    if (err) {
+                        logger.error(err);
+                        throw new Error(err);
+                    }
+                    if (res.statusCode != 200) {
+                        logger.error(res);
+                        throw new Error(res);
+                    }
+
+                    /*
+                     * プロセス終了
+                     */
+                    logger.info('通知完了');
+                    process.exit();
+                });
         });
+    }
 });
+job.start();
