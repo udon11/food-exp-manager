@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "start": "node bin/www",
-    "watch": "gulp watchify"
+    "watch": "gulp watchify",
+    "notice": "sudo forever start bin/notice"
   },
   "browserify": {
     "transform": [
