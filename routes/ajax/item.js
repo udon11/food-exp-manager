@@ -1,47 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
-mongoose.connect(process.env.MONGODB_URI, function (err) {
-    if (err) {
-        console.log('MongoDB connect error!');
-        console.log(process.env.MONGODB_URI);
-        console.error(err);
-        process.exit(1);
-    }
-});
-
-/**
- * スキーマ
- */
-const Schema = mongoose.Schema;
-const ItemSchema = new Schema({
-    name: {
-        type: String
-    },
-    type: {
-        type: String
-    },
-    expirationDate: {
-        type: Date
-    },
-    created: {
-        type: Date,
-        default: Date.now
-    }
-});
-
-const Item = mongoose.model('Item', ItemSchema);
+const Item = require('../../model/schema/item');
 
 /**
  * Add
  */
-router.get('/add', function (req, res, next) {
-    var response = {
-        result: "OK"
+router.get('/add', (req, res) => {
+    let response = {
+        result: 'OK'
     };
 
-    // DBへ追加
-    var item = new Item();
+    const item = new Item();
     item.name = req.query.name ? req.query.name : null;
     item.type = req.query.type ? req.query.type : null;
     item.expirationDate = req.query.expirationDate ? req.query.expirationDate : null;
@@ -49,7 +18,7 @@ router.get('/add', function (req, res, next) {
         if (err) {
             console.error(err);
             response = {
-                result: "NG"
+                result: 'NG'
             };
         }
     });
@@ -62,8 +31,8 @@ router.get('/add', function (req, res, next) {
 /**
  * Get
  */
-router.get('/get', function (req, res, next) {
-    Item.find({}, function (err, docs) {
+router.get('/get', (req, res) => {
+    Item.find({}, (err, docs) => {
         if (err) {
             console.error('DB find error!');
             console.error(err);
@@ -79,16 +48,16 @@ router.get('/get', function (req, res, next) {
 /**
  * Set
  */
-router.get('/set', function (req, res, next) {
+router.get('/set', (req, res) => {
     res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
 });
 
 /**
  * remove
  */
-router.get('/remove', function (req, res, next) {
-    const removeItemId = req.query.id
-    Item.remove({_id: removeItemId}, function (err) {
+router.get('/remove', (req, res) => {
+    const removeItemId = req.query.id;
+    Item.remove({_id: removeItemId}, (err) => {
         if (err) {
             console.error('Item remove error!');
             console.error(err);

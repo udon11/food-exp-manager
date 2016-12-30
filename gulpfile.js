@@ -13,7 +13,7 @@ var glob = require('glob');
 var path = {
   OUTPUT_FILENAME: 'dest.js',
   DEST_BUILD: 'public/javascripts',
-  ENTRY_POINT: glob.sync('./js/*.jsx')
+  ENTRY_POINT: glob.sync('./js/main.js')
 };
 
 // options of browserify
