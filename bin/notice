@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * 賞味期限が過ぎているItemを通知する
  */
@@ -5,17 +7,22 @@ const config = require('config');
 const moment = require('moment');
 const Request = require('superagent');
 const Item = require('../model/schema/item');
+const logger = require('../util/logger/systemLogger');
 
 
 Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
     if (err) {
+        logger.error(err);
         throw new Error('get item error.');
     }
 
     // 0件なら何もしない
     if (docs.length == 0) {
+        logger.info('賞味期限切れは0件');
         process.exit();
     }
+
+    logger.info('賞味期限切れは' + docs.length + '件');
 
     /*
      * 通知文の組み立て
@@ -24,9 +31,8 @@ Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
         value1: config.notice.prefix
     };
     docs.map((doc) => {
-        doc.expirationDate = moment.unix(doc.expirationDate).format('YYYY/MM/DD');
-        console.log(moment.unix(doc.expirationDate).format('YYYY/MM/DD'));
-        body.value1 += doc.name + ' ' + moment.unix(doc.expirationDate).format('YYYY/MM/DD') + '<br>';
+        doc.expirationDate = moment.unix(doc.expirationDate).format('MM/DD');
+        body.value1 += doc.name + ' ' + moment.unix(doc.expirationDate).format('YYYY/MM/DD') + 'まで<br>';
     });
     body.value1 += config.notice.suffix;
 
@@ -39,10 +45,12 @@ Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
         .send(body)
         .end((err, res) => {
             if (err) {
-                console.error(err);
+                logger.error(err);
                 throw new Error(err);
             }
-            console.log(res);
+            if (res.statusCode != 200) {
+                logger.error(res);
+            }
 
             /*
              * プロセス終了
