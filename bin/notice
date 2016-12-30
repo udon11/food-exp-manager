@@ -50,11 +50,13 @@ Item.find({expirationDate: {$lte: moment().unix()}}, (err, docs) => {
             }
             if (res.statusCode != 200) {
                 logger.error(res);
+                throw new Error(res);
             }
 
             /*
              * プロセス終了
              */
+            logger.info('通知完了');
             process.exit();
         });
 });
