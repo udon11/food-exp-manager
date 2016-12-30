@@ -32,7 +32,7 @@ router.get('/add', (req, res) => {
  * Get
  */
 router.get('/get', (req, res) => {
-    Item.find({}, (err, docs) => {
+    Item.find({}, {}, {sort: {expirationDate: 1}}, (err, docs) => {
         if (err) {
             console.error('DB find error!');
             console.error(err);
