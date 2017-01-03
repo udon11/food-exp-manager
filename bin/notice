@@ -6,9 +6,9 @@
 const config = require('config');
 const moment = require('moment');
 const Request = require('superagent');
+const cron = require('cron').CronJob;
 const Item = require('../model/schema/item');
 const logger = require('../util/logger/systemLogger');
-const cron = require('cron').CronJob;
 
 const job = new cron({
     cronTime: '0 0 9 * * *',
