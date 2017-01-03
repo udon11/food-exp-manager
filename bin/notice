@@ -10,8 +10,13 @@ const cron = require('cron').CronJob;
 const Item = require('../model/schema/item');
 const logger = require('../util/logger/systemLogger');
 
+function processStop(message) {
+    logger.info(message);
+    process.exit();
+}
+
 const job = new cron({
-    cronTime: '0 0 9 * * *',
+    cronTime: config.notice.cronTime,
     start: false,
     timeZone: 'Asia/Tokyo',
     onTick: () => {
@@ -25,8 +30,7 @@ const job = new cron({
 
             // 0件なら何もしない
             if (docs.length == 0) {
-                logger.info('賞味期限切れは0件');
-                process.exit();
+                processStop('賞味期限切れは0件');
             }
 
             logger.info('賞味期限切れは' + docs.length + '件');
@@ -63,8 +67,7 @@ const job = new cron({
                     /*
                      * プロセス終了
                      */
-                    logger.info('通知完了');
-                    process.exit();
+                    processStop('通知完了');
                 });
         });
     }

@@ -1,0 +1,10 @@
+{
+  "ifttt": {
+    "url": "<<ifttt maker url>>"
+  },
+  "notice": {
+    "cronTime": "<<cron time>>",
+    "prefix": "<<message prefix>>",
+    "suffix": "<<mesage suffix>>"
+  }
+}
