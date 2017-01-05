@@ -18,24 +18,27 @@ export default class ItemList extends React.Component {
                 });
             };
 
-            // 日付の差分
+            // 日付の差分表示
             const expirationDateObj = moment.unix(item.expirationDate);
-            let expirationDateDiff = null;
-            if (expirationDateObj.diff(moment(), "days") < 0) {
-                expirationDateDiff = <td className="text-danger">
-                    {Math.abs(expirationDateObj.diff(moment(), "days")) + '日前'}
-                </td>;
+            const expirationDateDiff = expirationDateObj.diff(moment(moment().format("YYYY/MM/DD"), "YYYY/MM/DD"), "days");
+            let expirationDateDiffDom = null;
+            if (expirationDateDiff < 0) {
+                expirationDateDiffDom =
+                    <td className="text-danger">
+                        {Math.abs(expirationDateDiff) + '日前'}
+                    </td>;
             } else {
-                expirationDateDiff = <td>
-                    {expirationDateObj.diff(moment(), "days") + '日後'}
-                </td>;
+                expirationDateDiffDom =
+                    <td>
+                        {expirationDateDiff + '日後'}
+                    </td>;
             }
 
             return (
                 <tr key={item._id}>
                     <td>{item.name}</td>
                     <td>{expirationDateObj.format("YYYY/MM/DD")}</td>
-                    {expirationDateDiff}
+                    {expirationDateDiffDom}
                     <td>
                         <Glyphicon
                             className='text-danger'
