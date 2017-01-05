@@ -9,7 +9,7 @@ export default class ItemAddModal extends React.Component {
         this.state = {
             name: '',
             type: '',
-            expirationDate: moment()
+            expirationDate: moment(moment().format("YYYY/MM/DD"))
         }
     }
 
