@@ -9,7 +9,7 @@ export default class ItemAddModal extends React.Component {
         this.state = {
             name: '',
             type: '',
-            expirationDate: moment(moment().format("YYYY/MM/DD"), "YYYY/MM/DD")
+            expirationDate: moment(moment().format('YYYY/MM/DD'), 'YYYY/MM/DD')
         }
     }
 
@@ -54,8 +54,8 @@ export default class ItemAddModal extends React.Component {
                         <FormGroup>
                             <ControlLabel>名前</ControlLabel>
                             <FormControl
-                                type="text"
-                                placeholder="アイテム名を入力"
+                                type='text'
+                                placeholder='アイテム名を入力'
                                 value={this.state.name}
                                 onChange={changeName}
                             />
@@ -74,9 +74,10 @@ export default class ItemAddModal extends React.Component {
                         <div className='text-center'>
                             <DatePicker
                                 inline
-                                dateFormat="YYYY/MM/DD"
+                                dateFormat='YYYY/MM/DD'
                                 selected={this.state.expirationDate}
                                 onChange={changeExpiratioDate}
+                                todayButton={'今日'}
                             />
                         </div>
                     </form>
@@ -84,7 +85,7 @@ export default class ItemAddModal extends React.Component {
 
                 <Modal.Footer>
                     <Button onClick={close}>キャンセル</Button>
-                    <Button bsStyle="primary" onClick={addItem}>追加</Button>
+                    <Button bsStyle='primary' onClick={addItem}>追加</Button>
                 </Modal.Footer>
             </Modal>
         )
