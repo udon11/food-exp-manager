@@ -1,35 +1,46 @@
 body {
-  margin-top: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    margin-top: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
 a {
-  color: #00B7FF;
+    color: #00B7FF;
 }
 
 .container-fluid {
-  max-width: 100%;
+    max-width: 100%;
 }
 
 /* スマホでnavbar */
 .navbar-toggle {
     display: none;
 }
+
 .collapse {
     display: block;
-    border-color:transparent;
+    border-color: transparent;
 }
 
 .navbar-right {
     float: right;
 }
+
 .navbar-header {
     float: left;
 }
+
 .navbar-nav {
-    margin:0 -15px 0 0;
+    margin: 0 -15px 0 0;
 }
-.navbar-nav>li>a {
+
+.navbar-nav > li > a {
     padding-top: 15px;
     padding-bottom: 15px;
+}
+
+/*
+ * 一覧の日付表示の枠線を消す
+ */
+.react-datepicker__input-container > input {
+    border: none;
 }

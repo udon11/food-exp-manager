@@ -46,10 +46,24 @@ router.get('/get', (req, res) => {
 });
 
 /**
- * Set
+ * update
  */
-router.get('/set', (req, res) => {
-    res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+router.get('/update', (req, res) => {
+    if (!req.query.id || !req.query.expirationDate) {
+        res.writeHead(400, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({result: 'NG'}));
+    }
+    Item.update({_id: req.query.id}, {$set: {expirationDate: req.query.expirationDate}}, (err) => {
+        if (err) {
+            console.error('Item update error!');
+            console.error(err);
+            res.writeHead(500, {'Content-Type': 'application/json; charset=utf-8'});
+            res.end(JSON.stringify(err));
+            return;
+        }
+        res.writeHead(200, {'Content-Type': 'application/json; charset=utf-8'});
+        res.end(JSON.stringify({result: 'ok'}));
+    });
 });
 
 /**

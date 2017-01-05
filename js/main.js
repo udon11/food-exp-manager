@@ -69,6 +69,30 @@ class App extends React.Component {
     }
 
     /**
+     * アイテムの更新
+     */
+    updateItem(id, expirationDate) {
+        console.log(expirationDate);
+        return new Promise((resolve, reject) => {
+            const query = {
+                id: id,
+                expirationDate: expirationDate
+            };
+            Request
+                .get('/ajax/item/update')
+                .query(query)
+                .end((err, res) => {
+                    if (err) {
+                        console.error(err);
+                        reject(err);
+                        return;
+                    }
+                    resolve(res);
+                });
+        });
+    }
+
+    /**
      * アイテムの削除
      */
     removeItem(id) {
@@ -110,6 +134,7 @@ class App extends React.Component {
 
                 <ItemList
                     {...this.state}
+                    updateItem={this.updateItem}
                     removeItem={this.removeItem}
                     fetchItemList={this.fetchItemList}
                 />

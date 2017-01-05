@@ -1,6 +1,7 @@
 import React from 'react'
 import {Table, Glyphicon} from 'react-bootstrap';
 import moment from 'moment-timezone'
+import DatePicker from 'react-datepicker';
 
 export default class ItemList extends React.Component {
     render() {
@@ -9,6 +10,17 @@ export default class ItemList extends React.Component {
         }
 
         const itemListElements = this.props.itemList.map((item) => {
+            // 更新処理
+            const updateItem = (expirationDate) => {
+                this.props.updateItem(item._id, expirationDate.unix()).then(() => {
+                    this.props.fetchItemList();
+                }).catch((err) => {
+                    console.log(err);
+                    alert('アイテムの更新に失敗');
+                });
+            };
+
+            // 削除処理
             const removeItem = () => {
                 this.props.removeItem(item._id).then(() => {
                     this.props.fetchItemList();
@@ -37,7 +49,13 @@ export default class ItemList extends React.Component {
             return (
                 <tr key={item._id}>
                     <td>{item.name}</td>
-                    <td>{expirationDateObj.format("YYYY/MM/DD")}</td>
+                    <td>
+                        <DatePicker
+                            dateFormat="YYYY/MM/DD"
+                            selected={expirationDateObj}
+                            onChange={updateItem}
+                        />
+                    </td>
                     {expirationDateDiffDom}
                     <td>
                         <Glyphicon
