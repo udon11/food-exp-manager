@@ -43,4 +43,5 @@ a {
  */
 .react-datepicker__input-container > input {
     border: none;
+    width: 100%;
 }

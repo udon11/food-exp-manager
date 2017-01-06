@@ -33,6 +33,7 @@ export default class ItemList extends React.Component {
             // 日付の差分表示
             const expirationDateObj = moment.unix(item.expirationDate);
             const expirationDateDiff = expirationDateObj.diff(moment(moment().format("YYYY/MM/DD"), "YYYY/MM/DD"), "days");
+            const expirationMonthDiff = expirationDateObj.diff(moment(moment().format("YYYY/MM/DD"), "YYYY/MM/DD"), "month");
             let expirationDateDiffDom = null;
             if (expirationDateDiff < 0) {
                 expirationDateDiffDom =
@@ -42,7 +43,7 @@ export default class ItemList extends React.Component {
             } else {
                 expirationDateDiffDom =
                     <td>
-                        {expirationDateDiff + '日後'}
+                        {expirationMonthDiff > 0 ? expirationMonthDiff + 'ヵ月後' : expirationDateDiff + '日後'}
                     </td>;
             }
 
