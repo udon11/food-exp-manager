@@ -72,10 +72,10 @@ export default class ItemList extends React.Component {
             <Table>
                 <thead>
                 <tr>
-                    <th>品名</th>
-                    <th>期限</th>
-                    <th></th>
-                    <th></th>
+                    <th style={{width: '37%'}}>品名</th>
+                    <th style={{width: '32%'}}>期限</th>
+                    <th style={{width: '23%'}}>残り</th>
+                    <th style={{width: '8%'}}>Del</th>
                 </tr>
                 </thead>
 
